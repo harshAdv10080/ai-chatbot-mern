@@ -2,6 +2,7 @@
   "name": "ai-chatbot-client",
   "version": "1.0.0",
   "description": "Frontend React app for AI chatbot",
+  "author": "Harsh Bhanushali <https://github.com/harshAdv10080>",
   "type": "module",
   "scripts": {
     "dev": "vite",

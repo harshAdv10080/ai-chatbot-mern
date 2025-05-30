@@ -69,6 +69,20 @@ npm run dev
 
 The app can be deployed on platforms like Vercel (frontend) and Railway (backend).
 
+## 👨‍💻 Author
+
+**Harsh Bhanushali**
+- GitHub: [@harshAdv10080](https://github.com/harshAdv10080)
+- Project: [AI Chatbot](https://github.com/harshAdv10080/ai-chatbot)
+
+## 🙏 Acknowledgments
+
+This project was built with passion and dedication by **Harsh Bhanushali**. Special thanks to the open-source community for the amazing tools and libraries that made this project possible.
+
 ## License
 
 MIT
+
+---
+
+**Built with ❤️ by [Harsh Bhanushali](https://github.com/harshAdv10080)**

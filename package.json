@@ -24,7 +24,7 @@
     "rag",
     "openai"
   ],
-  "author": "Your Name",
+  "author": "Harsh Bhanushali <https://github.com/harshAdv10080>",
   "license": "MIT",
   "devDependencies": {
     "concurrently": "^8.2.2"

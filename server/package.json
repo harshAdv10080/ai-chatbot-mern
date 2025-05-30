@@ -2,6 +2,7 @@
   "name": "ai-chatbot-server",
   "version": "1.0.0",
   "description": "Backend server for AI chatbot",
+  "author": "Harsh Bhanushali <https://github.com/harshAdv10080>",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
