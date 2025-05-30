@@ -22,11 +22,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: [
-      process.env.CLIENT_URL || "http://localhost:5173",
-      "https://ai-chatbot-76hrvamlr-harsh-bhanushalis-projects-d88ea155.vercel.app",
-      "http://localhost:5173"
-    ],
+    origin: "*",
     methods: ["GET", "POST"]
   }
 });
@@ -38,14 +34,10 @@ connectDB();
 app.use(helmet());
 app.use(compression());
 
-// CORS configuration
+// CORS configuration - Allow all origins for now
 app.use(cors({
-  origin: [
-    process.env.CLIENT_URL || "http://localhost:5173",
-    "https://ai-chatbot-76hrvamlr-harsh-bhanushalis-projects-d88ea155.vercel.app",
-    "http://localhost:5173"
-  ],
-  credentials: true,
+  origin: "*",
+  credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
