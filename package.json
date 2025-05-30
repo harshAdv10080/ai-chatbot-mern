@@ -1,0 +1,32 @@
+{
+  "name": "ai-chatbot-mern",
+  "version": "1.0.0",
+  "description": "Production-grade AI chatbot with MERN stack, Socket.IO, and RAG capabilities",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "mern",
+    "react",
+    "nodejs",
+    "mongodb",
+    "socketio",
+    "rag",
+    "openai"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
