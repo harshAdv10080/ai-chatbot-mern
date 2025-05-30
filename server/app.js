@@ -7,7 +7,10 @@ const compression = require('compression');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+// Load environment variables (Railway provides them directly, but dotenv for local dev)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config({ path: path.join(__dirname, '../.env') });
+}
 
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
