@@ -20,9 +20,21 @@ const Header = ({ conversation, onSidebarToggle, socketStatus, onUploadDocument,
             <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
               {conversation?.title || 'AI Assistant'}
             </h1>
-            {conversation && (
+            {conversation ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {conversation.stats?.totalMessages || 0} messages
+              </p>
+            ) : (
+              <p className="text-xs text-gray-400 dark:text-gray-500">
+                Built by{' '}
+                <a
+                  href="https://github.com/harshAdv10080"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Harsh Bhanushali
+                </a>
               </p>
             )}
           </div>

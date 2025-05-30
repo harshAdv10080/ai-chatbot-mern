@@ -13,10 +13,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const connectDB = require('./config/database');
+console.log('📁 Importing route files...');
 const authRoutes = require('./routes/auth');
 const chatRoutes = require('./routes/chat');
 const uploadRoutes = require('./routes/upload');
 const chatSocket = require('./sockets/chatSocket');
+console.log('✅ Route files imported successfully');
 
 const app = express();
 const server = http.createServer(app);
@@ -60,9 +62,11 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routes
+console.log('🔗 Loading API routes...');
 app.use('/api/auth', authRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/upload', uploadRoutes);
+console.log('✅ API routes loaded successfully');
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

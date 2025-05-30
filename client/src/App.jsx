@@ -2,6 +2,7 @@ import React, { Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import LoadingSpinner from './components/common/LoadingSpinner';
+import Footer from './components/common/Footer';
 
 // Lazy load components for better performance
 const Login = React.lazy(() => import('./components/Auth/Login'));
@@ -12,22 +13,22 @@ const Dashboard = React.lazy(() => import('./components/Dashboard/Dashboard'));
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
-  
+
   return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 // Public Route component (redirect if authenticated)
 const PublicRoute = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
-  
+
   return !isAuthenticated ? children : <Navigate to="/chat" replace />;
 };
 
@@ -39,59 +40,60 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Suspense fallback={<LoadingSpinner />}>
-        <Routes>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col">
+      <div className="flex-1">
+        <Suspense fallback={<LoadingSpinner />}>
+          <Routes>
           {/* Public routes */}
-          <Route 
-            path="/login" 
+          <Route
+            path="/login"
             element={
               <PublicRoute>
                 <Login />
               </PublicRoute>
-            } 
+            }
           />
-          <Route 
-            path="/register" 
+          <Route
+            path="/register"
             element={
               <PublicRoute>
                 <Register />
               </PublicRoute>
-            } 
+            }
           />
-          
+
           {/* Protected routes */}
-          <Route 
-            path="/chat" 
+          <Route
+            path="/chat"
             element={
               <ProtectedRoute>
                 <ChatInterface />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/chat/:conversationId" 
+          <Route
+            path="/chat/:conversationId"
             element={
               <ProtectedRoute>
                 <ChatInterface />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
-            } 
+            }
           />
-          
+
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/chat" replace />} />
-          
+
           {/* 404 page */}
-          <Route 
-            path="*" 
+          <Route
+            path="*"
             element={
               <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
@@ -109,10 +111,12 @@ function App() {
                   </button>
                 </div>
               </div>
-            } 
+            }
           />
-        </Routes>
-      </Suspense>
+          </Routes>
+        </Suspense>
+      </div>
+      <Footer />
     </div>
   );
 }
