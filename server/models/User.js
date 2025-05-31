@@ -44,6 +44,28 @@ const userSchema = new mongoose.Schema({
       default: true
     }
   },
+  twoFactorAuth: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    secret: {
+      type: String,
+      default: null,
+      select: false // Don't include in queries by default
+    },
+    backupCodes: [{
+      code: String,
+      used: {
+        type: Boolean,
+        default: false
+      }
+    }],
+    enabledAt: {
+      type: Date,
+      default: null
+    }
+  },
   subscription: {
     plan: {
       type: String,

@@ -1,14 +1,45 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, User, Bell, Shield, Palette, Database, Zap, Info } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import ChangePasswordModal from './ChangePasswordModal';
+import TwoFactorModal from './TwoFactorModal';
+import DisableTwoFactorModal from './DisableTwoFactorModal';
+import { authAPI } from '../../services/api';
+import { toast } from 'react-hot-toast';
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
   const [showChangePassword, setShowChangePassword] = useState(false);
+  const [show2FASetup, setShow2FASetup] = useState(false);
+  const [show2FADisable, setShow2FADisable] = useState(false);
+  const [twoFactorStatus, setTwoFactorStatus] = useState({
+    enabled: false,
+    enabledAt: null,
+    backupCodesCount: 0
+  });
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch2FAStatus();
+    }
+  }, [isOpen]);
+
+  const fetch2FAStatus = async () => {
+    try {
+      const response = await authAPI.get2FAStatus();
+      setTwoFactorStatus(response.data);
+    } catch (error) {
+      console.error('Failed to fetch 2FA status:', error);
+    }
+  };
+
+  const handle2FASuccess = () => {
+    fetch2FAStatus();
+    toast.success('2FA settings updated successfully!');
+  };
 
   if (!isOpen) return null;
 
@@ -196,9 +227,28 @@ const SettingsModal = ({ isOpen, onClose }) => {
                   <div className="font-medium text-gray-900 dark:text-gray-200">Change Password</div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Update your account password</div>
                 </button>
-                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 opacity-50 cursor-not-allowed">
-                  <div className="font-medium text-gray-900 dark:text-gray-200">Two-Factor Authentication</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Add an extra layer of security (Coming Soon)</div>
+                <button
+                  onClick={() => twoFactorStatus.enabled ? setShow2FADisable(true) : setShow2FASetup(true)}
+                  className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="font-medium text-gray-900 dark:text-gray-200">Two-Factor Authentication</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {twoFactorStatus.enabled
+                          ? `Enabled ${twoFactorStatus.enabledAt ? new Date(twoFactorStatus.enabledAt).toLocaleDateString() : ''}`
+                          : 'Add an extra layer of security'
+                        }
+                      </div>
+                    </div>
+                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      twoFactorStatus.enabled
+                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
+                        : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                    }`}>
+                      {twoFactorStatus.enabled ? 'Enabled' : 'Disabled'}
+                    </div>
+                  </div>
                 </button>
                 <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 opacity-50 cursor-not-allowed">
                   <div className="font-medium text-gray-900 dark:text-gray-200">Active Sessions</div>
@@ -353,6 +403,20 @@ const SettingsModal = ({ isOpen, onClose }) => {
       <ChangePasswordModal
         isOpen={showChangePassword}
         onClose={() => setShowChangePassword(false)}
+      />
+
+      {/* Two-Factor Authentication Setup Modal */}
+      <TwoFactorModal
+        isOpen={show2FASetup}
+        onClose={() => setShow2FASetup(false)}
+        onSuccess={handle2FASuccess}
+      />
+
+      {/* Two-Factor Authentication Disable Modal */}
+      <DisableTwoFactorModal
+        isOpen={show2FADisable}
+        onClose={() => setShow2FADisable(false)}
+        onSuccess={handle2FASuccess}
       />
     </>
   );

@@ -88,6 +88,11 @@ export const authAPI = {
   updateProfile: (profileData) => api.put('/auth/profile', profileData),
   refreshToken: () => api.post('/auth/refresh'),
   changePassword: (passwordData) => api.put('/auth/change-password', passwordData),
+  // 2FA endpoints
+  setup2FA: () => api.post('/auth/2fa/setup'),
+  verify2FA: (token) => api.post('/auth/2fa/verify', { token }),
+  disable2FA: (data) => api.post('/auth/2fa/disable', data),
+  get2FAStatus: () => api.get('/auth/2fa/status'),
 };
 
 export const chatAPI = {

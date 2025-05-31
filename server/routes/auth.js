@@ -3,6 +3,9 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
 const { auth } = require('../middleware/auth');
+const speakeasy = require('speakeasy');
+const QRCode = require('qrcode');
+const crypto = require('crypto');
 
 const router = express.Router();
 
@@ -335,6 +338,228 @@ router.put('/change-password', [
     console.error('Change password error:', error);
     res.status(500).json({
       message: 'Server error during password change'
+    });
+  }
+});
+
+// @route   POST /api/auth/2fa/setup
+// @desc    Setup 2FA for user
+// @access  Private
+router.post('/2fa/setup', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).select('+twoFactorAuth.secret');
+
+    if (user.twoFactorAuth.enabled) {
+      return res.status(400).json({
+        message: '2FA is already enabled for this account'
+      });
+    }
+
+    // Generate secret
+    const secret = speakeasy.generateSecret({
+      name: `AI Chatbot (${user.email})`,
+      issuer: 'AI Chatbot',
+      length: 32
+    });
+
+    // Generate QR code
+    const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
+
+    // Save secret temporarily (not enabled yet)
+    user.twoFactorAuth.secret = secret.base32;
+    await user.save();
+
+    res.json({
+      message: '2FA setup initiated',
+      qrCode: qrCodeUrl,
+      secret: secret.base32,
+      manualEntryKey: secret.base32
+    });
+
+  } catch (error) {
+    console.error('2FA setup error:', error);
+    res.status(500).json({
+      message: 'Server error during 2FA setup'
+    });
+  }
+});
+
+// @route   POST /api/auth/2fa/verify
+// @desc    Verify and enable 2FA
+// @access  Private
+router.post('/2fa/verify', [
+  auth,
+  body('token')
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('Token must be a 6-digit number')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { token } = req.body;
+    const user = await User.findById(req.user._id).select('+twoFactorAuth.secret');
+
+    if (!user.twoFactorAuth.secret) {
+      return res.status(400).json({
+        message: '2FA setup not initiated. Please setup 2FA first.'
+      });
+    }
+
+    // Verify token
+    const verified = speakeasy.totp.verify({
+      secret: user.twoFactorAuth.secret,
+      encoding: 'base32',
+      token: token,
+      window: 2
+    });
+
+    if (!verified) {
+      return res.status(400).json({
+        message: 'Invalid 2FA token'
+      });
+    }
+
+    // Generate backup codes
+    const backupCodes = [];
+    for (let i = 0; i < 10; i++) {
+      backupCodes.push({
+        code: crypto.randomBytes(4).toString('hex').toUpperCase(),
+        used: false
+      });
+    }
+
+    // Enable 2FA
+    user.twoFactorAuth.enabled = true;
+    user.twoFactorAuth.enabledAt = new Date();
+    user.twoFactorAuth.backupCodes = backupCodes;
+    await user.save();
+
+    res.json({
+      message: '2FA enabled successfully',
+      backupCodes: backupCodes.map(bc => bc.code)
+    });
+
+  } catch (error) {
+    console.error('2FA verification error:', error);
+    res.status(500).json({
+      message: 'Server error during 2FA verification'
+    });
+  }
+});
+
+// @route   POST /api/auth/2fa/disable
+// @desc    Disable 2FA
+// @access  Private
+router.post('/2fa/disable', [
+  auth,
+  body('password')
+    .notEmpty()
+    .withMessage('Password is required'),
+  body('token')
+    .optional()
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('Token must be a 6-digit number'),
+  body('backupCode')
+    .optional()
+    .isLength({ min: 8, max: 8 })
+    .withMessage('Backup code must be 8 characters')
+], async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: 'Validation failed',
+        errors: errors.array()
+      });
+    }
+
+    const { password, token, backupCode } = req.body;
+    const user = await User.findById(req.user._id).select('+password +twoFactorAuth.secret');
+
+    if (!user.twoFactorAuth.enabled) {
+      return res.status(400).json({
+        message: '2FA is not enabled for this account'
+      });
+    }
+
+    // Verify password
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      return res.status(400).json({
+        message: 'Invalid password'
+      });
+    }
+
+    // Verify 2FA token or backup code
+    let verified = false;
+
+    if (token) {
+      verified = speakeasy.totp.verify({
+        secret: user.twoFactorAuth.secret,
+        encoding: 'base32',
+        token: token,
+        window: 2
+      });
+    } else if (backupCode) {
+      const backupCodeObj = user.twoFactorAuth.backupCodes.find(
+        bc => bc.code === backupCode.toUpperCase() && !bc.used
+      );
+      if (backupCodeObj) {
+        verified = true;
+        backupCodeObj.used = true;
+      }
+    }
+
+    if (!verified) {
+      return res.status(400).json({
+        message: 'Invalid 2FA token or backup code'
+      });
+    }
+
+    // Disable 2FA
+    user.twoFactorAuth.enabled = false;
+    user.twoFactorAuth.secret = null;
+    user.twoFactorAuth.backupCodes = [];
+    user.twoFactorAuth.enabledAt = null;
+    await user.save();
+
+    res.json({
+      message: '2FA disabled successfully'
+    });
+
+  } catch (error) {
+    console.error('2FA disable error:', error);
+    res.status(500).json({
+      message: 'Server error during 2FA disable'
+    });
+  }
+});
+
+// @route   GET /api/auth/2fa/status
+// @desc    Get 2FA status
+// @access  Private
+router.get('/2fa/status', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    res.json({
+      enabled: user.twoFactorAuth.enabled,
+      enabledAt: user.twoFactorAuth.enabledAt,
+      backupCodesCount: user.twoFactorAuth.backupCodes.filter(bc => !bc.used).length
+    });
+
+  } catch (error) {
+    console.error('2FA status error:', error);
+    res.status(500).json({
+      message: 'Server error getting 2FA status'
     });
   }
 });
