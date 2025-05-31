@@ -1,0 +1,71 @@
+# Render Blueprint for AI Chatbot
+# This file defines the infrastructure for deploying on Render
+
+services:
+  # Backend Web Service
+  - type: web
+    name: ai-chatbot-backend
+    env: node
+    plan: starter
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: MONGODB_URI
+        fromDatabase:
+          name: ai-chatbot-db
+          property: connectionString
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: ai-chatbot-frontend
+          property: host
+      - key: MAX_FILE_SIZE
+        value: 10485760
+      - key: UPLOAD_DIR
+        value: uploads
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 900000
+      - key: RATE_LIMIT_MAX_REQUESTS
+        value: 100
+      - key: BCRYPT_ROUNDS
+        value: 12
+      # Add your API keys manually in Render dashboard
+      # - key: OPENAI_API_KEY
+      #   value: your-openai-api-key
+      # - key: GEMINI_API_KEY
+      #   value: your-gemini-api-key
+
+  # Frontend Static Site
+  - type: web
+    name: ai-chatbot-frontend
+    env: static
+    plan: starter
+    buildCommand: cd client && npm install && npm run build
+    staticPublishPath: client/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: ai-chatbot-backend
+          envVarKey: RENDER_EXTERNAL_URL
+          property: host
+        value: /api
+      - key: VITE_SOCKET_URL
+        fromService:
+          type: web
+          name: ai-chatbot-backend
+          property: host
+
+# Database (Optional - you can also use MongoDB Atlas)
+databases:
+  - name: ai-chatbot-db
+    databaseName: ai_chatbot
+    user: ai_chatbot_user
+    plan: starter

@@ -7,11 +7,19 @@
     "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
     "server:dev": "cd server && npm run dev",
     "client:dev": "cd client && npm run dev",
-    "build": "cd server && npm install",
+    "build": "cd server && npm install && cd ../client && npm run build",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm install",
     "start": "cd server && npm start",
     "install:all": "npm install && cd server && npm install && cd ../client && npm install",
     "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d --build",
+    "docker:prod:down": "docker-compose -f docker-compose.prod.yml down",
+    "deploy": "bash deploy.sh",
+    "deploy:win": "deploy.bat",
+    "deploy:render": "echo 'Please follow RENDER_DEPLOYMENT.md guide or use the deployment script'",
+    "build:render": "cd server && npm install && cd ../client && npm install && npm run build"
   },
   "keywords": [
     "ai",

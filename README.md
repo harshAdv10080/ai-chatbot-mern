@@ -65,9 +65,42 @@ npm run dev
 - Toggle dark mode in settings
 - Scroll through chat history without interruption
 
-## Deployment
+## 🚀 Deployment
 
-The app can be deployed on platforms like Vercel (frontend) and Railway (backend).
+### Quick Deployment
+```bash
+# Use the deployment script
+npm run deploy        # Linux/Mac
+npm run deploy:win    # Windows
+```
+
+### Manual Deployment Options
+
+1. **Render (Full Stack) - RECOMMENDED** 🌟
+   - Backend: Render Web Service
+   - Frontend: Render Static Site
+   - Database: Render PostgreSQL or MongoDB Atlas
+   - All-in-one platform with free tier
+
+2. **Railway + Vercel**
+   - Backend: Railway
+   - Frontend: Vercel
+   - Database: MongoDB Atlas
+
+3. **Docker (Full Stack)**
+   - All services in containers
+   - Includes MongoDB and Redis
+
+4. **Other Platforms**
+   - Heroku, DigitalOcean, AWS, etc.
+
+### Detailed Instructions
+- 🎨 **[RENDER_DEPLOYMENT.md](RENDER_DEPLOYMENT.md)** - Render deployment guide (RECOMMENDED)
+- 📚 **[DEPLOYMENT.md](DEPLOYMENT.md)** - Complete deployment guide for all platforms
+- ✅ **[DEPLOYMENT_CHECKLIST.md](DEPLOYMENT_CHECKLIST.md)** - Step-by-step checklist
+
+### Environment Variables
+See `.env.example` for required environment variables.
 
 ## 👨‍💻 Author
 
