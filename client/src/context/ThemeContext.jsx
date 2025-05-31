@@ -15,25 +15,17 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
   const { user } = useAuth();
 
-  // Initialize dark mode from user preference or localStorage
-  const [isDarkMode, setIsDarkMode] = useState(() => {
+  // Initialize dark mode safely
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Initialize theme on first load
+  useEffect(() => {
     if (typeof window !== 'undefined') {
-      if (user) {
-        // First check user's database preference
-        if (user.preferences?.theme === 'dark') {
-          return true;
-        } else if (user.preferences?.theme === 'light') {
-          return false;
-        }
-        // Fallback to localStorage for this user
-        const saved = localStorage.getItem(`darkMode_${user._id}`);
-        return saved ? JSON.parse(saved) : false;
-      }
-      // For non-logged in users, check system preference
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+      // For non-logged in users or initial load, check system preference
+      const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setIsDarkMode(systemDark || false);
     }
-    return false;
-  });
+  }, []);
 
   // Update theme when user changes (login/logout)
   useEffect(() => {
@@ -47,18 +39,23 @@ export const ThemeProvider = ({ children }) => {
         } else if (user.preferences?.theme === 'light') {
           userTheme = false;
         } else if (user.preferences?.theme === 'system') {
-          userTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          userTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
         } else {
           // Fallback to localStorage
-          const saved = localStorage.getItem(`darkMode_${user._id}`);
-          userTheme = saved ? JSON.parse(saved) : false;
+          try {
+            const saved = localStorage.getItem(`darkMode_${user._id}`);
+            userTheme = saved ? JSON.parse(saved) : false;
+          } catch (error) {
+            console.error('Error reading theme from localStorage:', error);
+            userTheme = false;
+          }
         }
 
         setIsDarkMode(userTheme);
       } else {
         // User logged out, reset to system preference
-        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        setIsDarkMode(systemDark);
+        const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setIsDarkMode(systemDark || false);
       }
     }
   }, [user]);
@@ -73,7 +70,11 @@ export const ThemeProvider = ({ children }) => {
 
     // Save to user-specific localStorage
     if (user) {
-      localStorage.setItem(`darkMode_${user._id}`, JSON.stringify(isDarkMode));
+      try {
+        localStorage.setItem(`darkMode_${user._id}`, JSON.stringify(isDarkMode));
+      } catch (error) {
+        console.error('Error saving theme to localStorage:', error);
+      }
     }
   }, [isDarkMode, user]);
 
@@ -100,11 +101,15 @@ export const ThemeProvider = ({ children }) => {
   // Clean up old generic theme data (migration helper)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      // Remove old generic darkMode key if it exists
-      const oldTheme = localStorage.getItem('darkMode');
-      if (oldTheme !== null) {
-        localStorage.removeItem('darkMode');
-        console.log('Cleaned up old theme data');
+      try {
+        // Remove old generic darkMode key if it exists
+        const oldTheme = localStorage.getItem('darkMode');
+        if (oldTheme !== null) {
+          localStorage.removeItem('darkMode');
+          console.log('Cleaned up old theme data');
+        }
+      } catch (error) {
+        console.error('Error cleaning up old theme data:', error);
       }
     }
   }, []);
