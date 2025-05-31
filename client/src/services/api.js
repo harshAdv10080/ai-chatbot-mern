@@ -93,6 +93,9 @@ export const authAPI = {
   verify2FA: (token) => api.post('/auth/2fa/verify', { token }),
   disable2FA: (data) => api.post('/auth/2fa/disable', data),
   get2FAStatus: () => api.get('/auth/2fa/status'),
+  // Password reset endpoints
+  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  resetPassword: (data) => api.post('/auth/reset-password', data),
 };
 
 export const chatAPI = {

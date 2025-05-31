@@ -7,6 +7,7 @@ import Footer from './components/common/Footer';
 // Lazy load components for better performance
 const Login = React.lazy(() => import('./components/Auth/Login'));
 const Register = React.lazy(() => import('./components/Auth/Register'));
+const ResetPassword = React.lazy(() => import('./components/Auth/ResetPassword'));
 const ChatInterface = React.lazy(() => import('./components/Chat/ChatInterface'));
 const Dashboard = React.lazy(() => import('./components/Dashboard/Dashboard'));
 
@@ -58,6 +59,14 @@ function App() {
             element={
               <PublicRoute>
                 <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password"
+            element={
+              <PublicRoute>
+                <ResetPassword />
               </PublicRoute>
             }
           />
