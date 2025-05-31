@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { X, User, Bell, Shield, Palette, Database, Zap, Info } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
+import ChangePasswordModal from './ChangePasswordModal';
 
 const SettingsModal = ({ isOpen, onClose }) => {
   const { user, logout } = useAuth();
   const { isDarkMode, toggleDarkMode } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
+  const [showChangePassword, setShowChangePassword] = useState(false);
 
   if (!isOpen) return null;
 
@@ -187,17 +189,20 @@ const SettingsModal = ({ isOpen, onClose }) => {
             <div>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Security Settings</h3>
               <div className="space-y-4">
-                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800">
+                <button
+                  onClick={() => setShowChangePassword(true)}
+                  className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 transition-colors"
+                >
                   <div className="font-medium text-gray-900 dark:text-gray-200">Change Password</div>
                   <div className="text-sm text-gray-500 dark:text-gray-400">Update your account password</div>
                 </button>
-                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800">
+                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 opacity-50 cursor-not-allowed">
                   <div className="font-medium text-gray-900 dark:text-gray-200">Two-Factor Authentication</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Add an extra layer of security</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Add an extra layer of security (Coming Soon)</div>
                 </button>
-                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800">
+                <button className="w-full text-left p-3 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-gray-800 opacity-50 cursor-not-allowed">
                   <div className="font-medium text-gray-900 dark:text-gray-200">Active Sessions</div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">Manage your active login sessions</div>
+                  <div className="text-sm text-gray-500 dark:text-gray-400">Manage your active login sessions (Coming Soon)</div>
                 </button>
               </div>
             </div>
@@ -287,8 +292,9 @@ const SettingsModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
+    <>
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Settings</h2>
@@ -340,8 +346,15 @@ const SettingsModal = ({ isOpen, onClose }) => {
             {renderTabContent()}
           </div>
         </div>
+        </div>
       </div>
-    </div>
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+      />
+    </>
   );
 };
 

@@ -87,6 +87,7 @@ export const authAPI = {
   getProfile: () => api.get('/auth/me'),
   updateProfile: (profileData) => api.put('/auth/profile', profileData),
   refreshToken: () => api.post('/auth/refresh'),
+  changePassword: (passwordData) => api.put('/auth/change-password', passwordData),
 };
 
 export const chatAPI = {
