@@ -20,9 +20,9 @@ const Footer = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          <a 
-            href="https://github.com/harshAdv10080/ai-chatbot" 
-            target="_blank" 
+          <a
+            href="https://github.com/harshAdv10080/ai-chatbot-mern"
+            target="_blank"
             rel="noopener noreferrer"
             className="flex items-center space-x-1 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors"
           >
