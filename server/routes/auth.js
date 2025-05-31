@@ -464,13 +464,29 @@ router.post('/2fa/disable', [
     .withMessage('Password is required'),
   body('token')
     .optional()
-    .isLength({ min: 6, max: 6 })
-    .isNumeric()
-    .withMessage('Token must be a 6-digit number'),
+    .custom((value, { req }) => {
+      // If token is provided, validate it
+      if (value && (!/^\d{6}$/.test(value))) {
+        throw new Error('Token must be a 6-digit number');
+      }
+      return true;
+    }),
   body('backupCode')
     .optional()
-    .isLength({ min: 8, max: 8 })
-    .withMessage('Backup code must be 8 characters')
+    .custom((value, { req }) => {
+      // If backupCode is provided, validate it
+      if (value && (!/^[A-F0-9]{8}$/i.test(value))) {
+        throw new Error('Backup code must be 8 characters (A-F, 0-9)');
+      }
+      return true;
+    })
+    .custom((value, { req }) => {
+      // Ensure either token or backupCode is provided
+      if (!req.body.token && !value) {
+        throw new Error('Either 2FA token or backup code is required');
+      }
+      return true;
+    })
 ], async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -508,6 +524,12 @@ router.post('/2fa/disable', [
         token: token,
         window: 2
       });
+
+      if (!verified) {
+        return res.status(400).json({
+          message: 'Invalid 2FA token. Please check your authenticator app.'
+        });
+      }
     } else if (backupCode) {
       const backupCodeObj = user.twoFactorAuth.backupCodes.find(
         bc => bc.code === backupCode.toUpperCase() && !bc.used
@@ -515,12 +537,14 @@ router.post('/2fa/disable', [
       if (backupCodeObj) {
         verified = true;
         backupCodeObj.used = true;
+      } else {
+        return res.status(400).json({
+          message: 'Invalid or already used backup code.'
+        });
       }
-    }
-
-    if (!verified) {
+    } else {
       return res.status(400).json({
-        message: 'Invalid 2FA token or backup code'
+        message: 'Either 2FA token or backup code is required'
       });
     }
 

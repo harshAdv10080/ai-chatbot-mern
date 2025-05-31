@@ -30,9 +30,11 @@ const SettingsModal = ({ isOpen, onClose }) => {
   const fetch2FAStatus = async () => {
     try {
       const response = await authAPI.get2FAStatus();
+      console.log('2FA Status:', response.data);
       setTwoFactorStatus(response.data);
     } catch (error) {
       console.error('Failed to fetch 2FA status:', error);
+      toast.error('Failed to load 2FA status');
     }
   };
 

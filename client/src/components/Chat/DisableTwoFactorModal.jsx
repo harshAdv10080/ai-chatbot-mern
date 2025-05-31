@@ -44,12 +44,16 @@ const DisableTwoFactorModal = ({ isOpen, onClose, onSuccess }) => {
         newErrors.token = '2FA code is required';
       } else if (formData.token.length !== 6) {
         newErrors.token = '2FA code must be 6 digits';
+      } else if (!/^\d{6}$/.test(formData.token)) {
+        newErrors.token = '2FA code must contain only numbers';
       }
     } else {
       if (!formData.backupCode) {
         newErrors.backupCode = 'Backup code is required';
       } else if (formData.backupCode.length !== 8) {
         newErrors.backupCode = 'Backup code must be 8 characters';
+      } else if (!/^[A-F0-9]{8}$/i.test(formData.backupCode)) {
+        newErrors.backupCode = 'Backup code must contain only letters A-F and numbers 0-9';
       }
     }
 
@@ -85,15 +89,28 @@ const DisableTwoFactorModal = ({ isOpen, onClose, onSuccess }) => {
       if (onSuccess) onSuccess();
       onClose();
     } catch (error) {
+      console.error('2FA disable error:', error);
       const errorMessage = error.response?.data?.message || 'Failed to disable 2FA';
       toast.error(errorMessage);
-      
+
       if (error.response?.data?.errors) {
         const backendErrors = {};
         error.response.data.errors.forEach(err => {
-          backendErrors[err.path] = err.msg;
+          // Map backend field names to frontend field names
+          const fieldName = err.param || err.path;
+          if (fieldName === 'backupCode' || fieldName === 'token' || fieldName === 'password') {
+            backendErrors[fieldName] = err.msg;
+          }
         });
         setErrors(backendErrors);
+      }
+
+      // If it's a specific validation error, don't show generic toast
+      if (error.response?.status === 400 && error.response?.data?.errors) {
+        // Error already handled above
+      } else {
+        // Show generic error for other cases
+        console.log('Full error response:', error.response);
       }
     } finally {
       setLoading(false);
