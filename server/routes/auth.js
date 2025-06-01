@@ -686,7 +686,8 @@ router.post('/forgot-password', [
 
     // In a real app, you would send an email here
     // For demo purposes, we'll return the reset token
-    const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
+    const clientUrl = process.env.CLIENT_URL || 'https://ai-chatbot-frontend-hzof.onrender.com';
+    const resetUrl = `${clientUrl}/reset-password?token=${resetToken}`;
 
     // TODO: Send email with reset link
     console.log('Password reset link:', resetUrl);

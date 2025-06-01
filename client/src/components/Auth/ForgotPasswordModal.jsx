@@ -30,12 +30,17 @@ const ForgotPasswordModal = ({ isOpen, onClose }) => {
 
     try {
       const response = await authAPI.forgotPassword(email);
-      
+
+      console.log('Forgot password response:', response.data);
+
       // For demo purposes, we get the reset URL
       if (response.data.resetUrl) {
+        console.log('Reset URL received:', response.data.resetUrl);
         setResetUrl(response.data.resetUrl);
+      } else {
+        console.log('No reset URL in response');
       }
-      
+
       setStep('success');
       toast.success('Password reset instructions sent!');
     } catch (error) {
