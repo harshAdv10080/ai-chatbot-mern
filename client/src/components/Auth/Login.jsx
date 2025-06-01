@@ -207,8 +207,8 @@ const Login = () => {
             Demo Credentials
           </h3>
           <p className="text-xs text-blue-600 dark:text-blue-300">
-            Email: demo@example.com<br />
-            Password: demo123
+            Email: demo@gmail.com<br />
+            Password: Demo123
           </p>
         </div>
       </div>
