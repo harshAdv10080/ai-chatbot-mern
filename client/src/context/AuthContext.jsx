@@ -62,12 +62,27 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Login function
-  const login = async (email, password) => {
+  const login = async (email, password, twoFactorToken = null, backupCode = null) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       dispatch({ type: 'SET_ERROR', payload: null });
 
-      const response = await api.post('/auth/login', { email, password });
+      const loginData = { email, password };
+      if (twoFactorToken) loginData.twoFactorToken = twoFactorToken;
+      if (backupCode) loginData.backupCode = backupCode;
+
+      const response = await api.post('/auth/login', loginData);
+
+      // Check if 2FA is required
+      if (response.data.requires2FA) {
+        dispatch({ type: 'SET_LOADING', payload: false });
+        return {
+          success: false,
+          requires2FA: true,
+          message: response.data.message
+        };
+      }
+
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);
@@ -83,6 +98,8 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'SET_ERROR', payload: message });
       toast.error(message);
       return { success: false, error: message };
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 

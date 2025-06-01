@@ -104,7 +104,7 @@ router.post('/register', [
 });
 
 // @route   POST /api/auth/login
-// @desc    Login user
+// @desc    Login user (step 1: email + password)
 // @access  Public
 router.post('/login', [
   body('email')
@@ -113,7 +113,16 @@ router.post('/login', [
     .withMessage('Please enter a valid email'),
   body('password')
     .exists()
-    .withMessage('Password is required')
+    .withMessage('Password is required'),
+  body('twoFactorToken')
+    .optional()
+    .isLength({ min: 6, max: 6 })
+    .isNumeric()
+    .withMessage('2FA token must be a 6-digit number'),
+  body('backupCode')
+    .optional()
+    .isLength({ min: 8, max: 8 })
+    .withMessage('Backup code must be 8 characters')
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -125,10 +134,10 @@ router.post('/login', [
       });
     }
 
-    const { email, password } = req.body;
+    const { email, password, twoFactorToken, backupCode } = req.body;
 
-    // Find user and include password for comparison
-    const user = await User.findOne({ email }).select('+password');
+    // Find user and include password and 2FA secret for comparison
+    const user = await User.findOne({ email }).select('+password +twoFactorAuth.secret');
     if (!user) {
       return res.status(400).json({
         message: 'Invalid credentials'
@@ -150,7 +159,56 @@ router.post('/login', [
       });
     }
 
-    // Generate token
+    // Check if 2FA is enabled for this user
+    if (user.twoFactorAuth.enabled) {
+      // 2FA is enabled, check if 2FA token or backup code is provided
+      if (!twoFactorToken && !backupCode) {
+        return res.status(200).json({
+          message: '2FA required',
+          requires2FA: true,
+          userId: user._id // Temporary identifier for 2FA step
+        });
+      }
+
+      // Verify 2FA token or backup code
+      let verified = false;
+
+      if (twoFactorToken) {
+        verified = speakeasy.totp.verify({
+          secret: user.twoFactorAuth.secret,
+          encoding: 'base32',
+          token: twoFactorToken,
+          window: 2
+        });
+
+        if (!verified) {
+          return res.status(400).json({
+            message: 'Invalid 2FA token'
+          });
+        }
+      } else if (backupCode) {
+        const backupCodeObj = user.twoFactorAuth.backupCodes.find(
+          bc => bc.code === backupCode.toUpperCase() && !bc.used
+        );
+        if (backupCodeObj) {
+          verified = true;
+          backupCodeObj.used = true;
+          await user.save(); // Save the used backup code
+        } else {
+          return res.status(400).json({
+            message: 'Invalid or already used backup code'
+          });
+        }
+      }
+
+      if (!verified) {
+        return res.status(400).json({
+          message: 'Invalid 2FA verification'
+        });
+      }
+    }
+
+    // Generate token (either no 2FA or 2FA verified)
     const token = generateToken(user._id);
 
     // Update last login

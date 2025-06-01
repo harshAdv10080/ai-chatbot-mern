@@ -12,10 +12,14 @@ const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    twoFactorToken: '',
+    backupCode: ''
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [requires2FA, setRequires2FA] = useState(false);
+  const [useBackupCode, setUseBackupCode] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -52,13 +56,20 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-    
-    const result = await login(formData.email, formData.password);
-    
+
+    const result = await login(
+      formData.email,
+      formData.password,
+      formData.twoFactorToken || null,
+      formData.backupCode || null
+    );
+
     if (result.success) {
       navigate('/chat');
+    } else if (result.requires2FA) {
+      setRequires2FA(true);
     }
   };
 
@@ -145,6 +156,86 @@ const Login = () => {
                 <p className="mt-1 text-sm text-red-600">{errors.password}</p>
               )}
             </div>
+
+            {/* 2FA Fields - Show only when 2FA is required */}
+            {requires2FA && (
+              <div className="space-y-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="text-center">
+                  <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                    Two-Factor Authentication Required
+                  </h3>
+                  <p className="text-xs text-blue-600 dark:text-blue-300 mb-4">
+                    Enter your 6-digit code from your authenticator app or use a backup code.
+                  </p>
+                </div>
+
+                {/* 2FA Method Toggle */}
+                <div className="flex items-center justify-center space-x-4 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => setUseBackupCode(false)}
+                    className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                      !useBackupCode
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    Authenticator Code
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setUseBackupCode(true)}
+                    className={`px-3 py-1 rounded-md text-sm transition-colors ${
+                      useBackupCode
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    Backup Code
+                  </button>
+                </div>
+
+                {!useBackupCode ? (
+                  <div>
+                    <label htmlFor="twoFactorToken" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      2FA Code from Authenticator App
+                    </label>
+                    <input
+                      id="twoFactorToken"
+                      name="twoFactorToken"
+                      type="text"
+                      value={formData.twoFactorToken}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '').slice(0, 6);
+                        setFormData(prev => ({ ...prev, twoFactorToken: value }));
+                      }}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-center text-lg font-mono tracking-widest"
+                      placeholder="123456"
+                      maxLength={6}
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <label htmlFor="backupCode" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Backup Code
+                    </label>
+                    <input
+                      id="backupCode"
+                      name="backupCode"
+                      type="text"
+                      value={formData.backupCode}
+                      onChange={(e) => {
+                        const value = e.target.value.toUpperCase().replace(/[^A-F0-9]/g, '').slice(0, 8);
+                        setFormData(prev => ({ ...prev, backupCode: value }));
+                      }}
+                      className="mt-1 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white text-center text-lg font-mono tracking-widest"
+                      placeholder="ABCD1234"
+                      maxLength={8}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Remember me and forgot password */}
