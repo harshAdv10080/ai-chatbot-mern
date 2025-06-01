@@ -8,7 +8,7 @@ import LoadingSpinner from '../common/LoadingSpinner';
 const ResetPassword = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const token = searchParams.get('token');
+  const token = searchParams.get('token'); // Get reset token from URL
 
   const [formData, setFormData] = useState({
     newPassword: '',
