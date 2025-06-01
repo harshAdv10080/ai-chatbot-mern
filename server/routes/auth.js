@@ -666,14 +666,19 @@ router.post('/forgot-password', [
 
     const { email } = req.body;
 
+    console.log('Forgot password request for email:', email);
+
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
+      console.log('User not found for email:', email);
       // Don't reveal if email exists or not for security
       return res.json({
         message: 'If an account with that email exists, we have sent a password reset link.'
       });
     }
+
+    console.log('User found:', user.email);
 
     // Generate reset token
     const resetToken = crypto.randomBytes(32).toString('hex');
@@ -758,6 +763,25 @@ router.post('/reset-password', [
       message: 'Server error during password reset'
     });
   }
+});
+
+// @route   GET /api/auth/test-forgot-password
+// @desc    Test forgot password functionality
+// @access  Public
+router.get('/test-forgot-password', (req, res) => {
+  const clientUrl = process.env.CLIENT_URL || 'https://ai-chatbot-frontend-hzof.onrender.com';
+  const testToken = 'test123456789';
+  const resetUrl = `${clientUrl}/reset-password?token=${testToken}`;
+
+  res.json({
+    message: 'Test endpoint working',
+    clientUrl: clientUrl,
+    resetUrl: resetUrl,
+    env: {
+      CLIENT_URL: process.env.CLIENT_URL,
+      NODE_ENV: process.env.NODE_ENV
+    }
+  });
 });
 
 module.exports = router;
