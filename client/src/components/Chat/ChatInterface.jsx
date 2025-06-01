@@ -265,7 +265,7 @@ const ChatInterface = () => {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="flex h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
       {/* Sidebar */}
       <Sidebar
         conversations={conversations}
@@ -278,18 +278,24 @@ const ChatInterface = () => {
       />
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col relative">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white/50 via-blue-50/30 to-indigo-100/40 dark:from-gray-800/50 dark:via-slate-800/30 dark:to-indigo-900/40"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(99,102,241,0.1),transparent_50%)]"></div>
+
         {/* Header */}
-        <Header
-          conversation={currentConversation}
-          onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
-          socketStatus={socket.getConnectionStatus()}
-          onUploadDocument={handleUploadDocument}
-          onOpenSettings={handleOpenSettings}
-        />
+        <div className="relative z-10">
+          <Header
+            conversation={currentConversation}
+            onSidebarToggle={() => setSidebarOpen(!sidebarOpen)}
+            socketStatus={socket.getConnectionStatus()}
+            onUploadDocument={handleUploadDocument}
+            onOpenSettings={handleOpenSettings}
+          />
+        </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden relative z-10">
           <MessageList
             messages={messages}
             streamingMessage={streamingMessage}
@@ -300,17 +306,19 @@ const ChatInterface = () => {
         </div>
 
         {/* Input */}
-        <MessageInput
-          onSendMessage={sendMessage}
-          onTypingStart={handleTypingStart}
-          onTypingStop={handleTypingStop}
-          disabled={isStreaming}
-          placeholder={
-            conversationId
-              ? "Type your message..."
-              : "Start a new conversation..."
-          }
-        />
+        <div className="relative z-10">
+          <MessageInput
+            onSendMessage={sendMessage}
+            onTypingStart={handleTypingStart}
+            onTypingStop={handleTypingStop}
+            disabled={isStreaming}
+            placeholder={
+              conversationId
+                ? "Type your message..."
+                : "Start a new conversation..."
+            }
+          />
+        </div>
       </div>
 
       {/* Modals */}

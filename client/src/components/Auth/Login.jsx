@@ -74,22 +74,28 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        {/* Header */}
-        <div className="text-center">
-          <div className="flex justify-center">
-            <div className="flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full">
-              <Bot className="w-8 h-8 text-white" />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.1),transparent_50%)]"></div>
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_50%)]"></div>
+
+      <div className="max-w-md w-full space-y-8 relative z-10">
+        {/* Glass Card Container */}
+        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-blue-500/10 border border-white/20 dark:border-gray-700/50 p-8">
+          {/* Header */}
+          <div className="text-center">
+            <div className="flex justify-center">
+              <div className="flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg shadow-blue-500/25">
+                <Bot className="w-10 h-10 text-white" />
+              </div>
             </div>
+            <h2 className="mt-6 text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+              Welcome back
+            </h2>
+            <p className="mt-3 text-gray-600 dark:text-gray-400 font-medium">
+              Sign in to your AI assistant account
+            </p>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
-            Welcome back
-          </h2>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-            Sign in to your AI assistant account
-          </p>
-        </div>
 
         {/* Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
@@ -268,12 +274,17 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] hover:shadow-xl shadow-lg"
             >
               {loading ? (
                 <LoadingSpinner size="sm" text="" />
               ) : (
-                'Sign in'
+                <>
+                  <span>Sign in</span>
+                  <div className="ml-2 group-hover:translate-x-1 transition-transform duration-200">
+                    →
+                  </div>
+                </>
               )}
             </button>
           </div>
@@ -293,14 +304,15 @@ const Login = () => {
         </form>
 
         {/* Demo credentials */}
-        <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-          <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-            Demo Credentials
+        <div className="mt-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl border border-blue-200/50 dark:border-blue-800/50">
+          <h3 className="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+            🎯 Demo Credentials
           </h3>
-          <p className="text-xs text-blue-600 dark:text-blue-300">
+          <p className="text-sm text-blue-700 dark:text-blue-300 font-mono">
             Email: demo@gmail.com<br />
             Password: Demo123
           </p>
+        </div>
         </div>
       </div>
 
