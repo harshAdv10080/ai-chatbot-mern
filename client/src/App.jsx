@@ -10,6 +10,7 @@ const Register = React.lazy(() => import('./components/Auth/Register'));
 const ResetPassword = React.lazy(() => import('./components/Auth/ResetPassword'));
 const ChatInterface = React.lazy(() => import('./components/Chat/ChatInterface'));
 const Dashboard = React.lazy(() => import('./components/Dashboard/Dashboard'));
+const AnimationShowcase = React.lazy(() => import('./components/demo/AnimationShowcase'));
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -95,6 +96,12 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             }
+          />
+
+          {/* Animation Showcase - Public route for demo */}
+          <Route
+            path="/animations"
+            element={<AnimationShowcase />}
           />
 
           {/* Default redirect */}
