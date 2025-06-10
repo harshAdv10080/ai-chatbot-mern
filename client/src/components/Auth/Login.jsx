@@ -323,7 +323,7 @@ const Login = () => {
             ⚡ Free Tier Notice
           </h3>
           <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-            Backend may take <strong>30-60 seconds</strong> to wake up. Please wait or refresh if slow.
+            Backend may take <strong>30-60 seconds</strong> to wake up. Please close and open the website again.
             <span className="block mt-1 font-medium">Thank you! 🙏</span>
           </p>
         </div>
@@ -347,8 +347,7 @@ const Login = () => {
                     💡 If login seems slow:
                   </p>
                   <ul className="text-xs text-amber-700 dark:text-amber-300 mt-1 space-y-1">
-                    <li>• Please wait patiently</li>
-                    <li>• Or refresh and try again</li>
+                    <li>• Please wait close website and open it again.</li>
                     <li>• Server will wake up soon!</li>
                   </ul>
                 </div>
