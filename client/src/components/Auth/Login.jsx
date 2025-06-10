@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, Bot } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../common/LoadingSpinner';
+import AuthLoadingSpinner from '../common/AuthLoadingSpinner';
 import ForgotPasswordModal from './ForgotPasswordModal';
 
 const Login = () => {
@@ -79,7 +80,9 @@ const Login = () => {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(59,130,246,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(99,102,241,0.1),transparent_50%)]"></div>
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(139,92,246,0.1),transparent_50%)] dark:bg-[radial-gradient(circle_at_70%_80%,rgba(168,85,247,0.1),transparent_50%)]"></div>
 
-      <div className="max-w-md w-full space-y-8 relative z-10">
+      <div className="max-w-6xl w-full flex items-start justify-center gap-8 relative z-10">
+        {/* Main Login Form */}
+        <div className="max-w-md w-full space-y-8">
         {/* Glass Card Container */}
         <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl shadow-2xl shadow-blue-500/10 border border-white/20 dark:border-gray-700/50 p-8">
           {/* Header */}
@@ -277,7 +280,7 @@ const Login = () => {
               className="group relative w-full flex justify-center py-4 px-6 border border-transparent text-lg font-semibold rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-4 focus:ring-blue-500/50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] hover:shadow-xl shadow-lg"
             >
               {loading ? (
-                <LoadingSpinner size="sm" text="" />
+                <AuthLoadingSpinner size="sm" />
               ) : (
                 <>
                   <span>Sign in</span>
@@ -313,6 +316,48 @@ const Login = () => {
             Password: Demo123
           </p>
         </div>
+
+        {/* Free Tier Notice - Mobile Version */}
+        <div className="lg:hidden mt-4 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/50 dark:border-amber-800/50">
+          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2 flex items-center">
+            ⚡ Free Tier Notice
+          </h3>
+          <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+            Backend may take <strong>30-60 seconds</strong> to wake up. Please wait or refresh if slow.
+            <span className="block mt-1 font-medium">Thank you! 🙏</span>
+          </p>
+        </div>
+
+        </div>
+        </div>
+
+        {/* Free Tier Notice - Side Panel */}
+        <div className="hidden lg:block max-w-sm w-full">
+          <div className="sticky top-8">
+            <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/50 dark:border-amber-800/50 shadow-lg backdrop-blur-sm">
+              <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-3 flex items-center">
+                ⚡ Free Tier Notice
+              </h3>
+              <div className="space-y-3">
+                <p className="text-sm text-amber-700 dark:text-amber-300 leading-relaxed">
+                  Backend is hosted on <strong>free tier</strong> and may take <strong>30-60 seconds</strong> to wake up if inactive.
+                </p>
+                <div className="p-3 bg-amber-100/50 dark:bg-amber-800/20 rounded-lg">
+                  <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                    💡 If login seems slow:
+                  </p>
+                  <ul className="text-xs text-amber-700 dark:text-amber-300 mt-1 space-y-1">
+                    <li>• Please wait patiently</li>
+                    <li>• Or refresh and try again</li>
+                    <li>• Server will wake up soon!</li>
+                  </ul>
+                </div>
+                <p className="text-sm text-amber-600 dark:text-amber-400 font-medium text-center">
+                  Thank you for your patience! 🙏
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

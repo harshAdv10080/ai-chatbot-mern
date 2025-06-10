@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, Bot } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import LoadingSpinner from '../common/LoadingSpinner';
+import AuthLoadingSpinner from '../common/AuthLoadingSpinner';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -81,7 +82,9 @@ const Register = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
+      <div className="max-w-6xl w-full flex items-start justify-center gap-8">
+        {/* Main Register Form */}
+        <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
           <div className="flex justify-center">
@@ -256,7 +259,7 @@ const Register = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <LoadingSpinner size="sm" text="" />
+                <AuthLoadingSpinner size="sm" />
               ) : (
                 'Create account'
               )}
@@ -276,6 +279,47 @@ const Register = () => {
             </p>
           </div>
         </form>
+
+        {/* Free Tier Notice - Mobile Version */}
+        <div className="lg:hidden mt-6 p-4 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl border border-amber-200/50 dark:border-amber-800/50">
+          <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2 flex items-center">
+            ⚡ Free Tier Notice
+          </h3>
+          <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
+            Backend may take <strong>30-60 seconds</strong> to wake up. Please wait or refresh if slow.
+            <span className="block mt-1 font-medium">Thank you! 🙏</span>
+          </p>
+        </div>
+        </div>
+
+        {/* Free Tier Notice - Side Panel */}
+        <div className="hidden lg:block max-w-sm w-full">
+          <div className="sticky top-8">
+            <div className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-2xl border border-amber-200/50 dark:border-amber-800/50 shadow-lg backdrop-blur-sm">
+              <h3 className="text-lg font-semibold text-amber-800 dark:text-amber-200 mb-3 flex items-center">
+                ⚡ Free Tier Notice
+              </h3>
+              <div className="space-y-3">
+                <p className="text-sm text-amber-700 dark:text-amber-300 leading-relaxed">
+                  Backend is hosted on <strong>free tier</strong> and may take <strong>30-60 seconds</strong> to wake up if inactive.
+                </p>
+                <div className="p-3 bg-amber-100/50 dark:bg-amber-800/20 rounded-lg">
+                  <p className="text-sm text-amber-800 dark:text-amber-200 font-medium">
+                    💡 If registration seems slow:
+                  </p>
+                  <ul className="text-xs text-amber-700 dark:text-amber-300 mt-1 space-y-1">
+                    <li>• Please wait patiently</li>
+                    <li>• Or refresh and try again</li>
+                    <li>• Server will wake up soon!</li>
+                  </ul>
+                </div>
+                <p className="text-sm text-amber-600 dark:text-amber-400 font-medium text-center">
+                  Thank you for your patience! 🙏
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
