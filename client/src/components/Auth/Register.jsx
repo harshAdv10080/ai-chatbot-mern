@@ -286,7 +286,7 @@ const Register = () => {
             ⚡ Free Tier Notice
           </h3>
           <p className="text-xs text-amber-700 dark:text-amber-300 leading-relaxed">
-            Backend may take <strong>30-60 seconds</strong> to wake up. Please wait or refresh if slow.
+            Backend may take <strong>30-60 seconds</strong> to wake up. • Please close and open the website again.
             <span className="block mt-1 font-medium">Thank you! 🙏</span>
           </p>
         </div>
