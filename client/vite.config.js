@@ -12,6 +12,7 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    historyApiFallback: true,
     proxy: {
       '/api': {
         target: 'http://localhost:5000',
@@ -38,6 +39,10 @@ export default defineConfig({
         },
       },
     },
+  },
+  preview: {
+    port: 4173,
+    historyApiFallback: true,
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom', 'socket.io-client'],
